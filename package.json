@@ -11,15 +11,19 @@
     "watch": "vite build --watch"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "debug": "^4.4.0",
     "drizzle-orm": "^0.45.1",
     "express": "^5.1.0",
     "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",
     "pino-pretty": "^13.1.2",
+    "resend": "^6.6.0",
+    "uuid": "^13.0.0",
     "zod": "^4.1.13"
   },
   "devDependencies": {
