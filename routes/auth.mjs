@@ -9,8 +9,9 @@ import db from "../db/index.mjs";
 import { usersTable } from "../db/schema/user.mjs";
 
 import { authDto } from "../dtos/auth.dto.mjs";
-import { castDaysToMilliseconds } from "../utils/date.mjs";
+import { castDaysToMilliseconds, castDaysToSeconds } from "../utils/date.mjs";
 import { warnEnvironmentVariable } from "/utils/env-vars.mjs";
+import { valkeyClient } from "../config/valkey.mjs";
 
 export const authRouter = Router();
 
@@ -92,8 +93,13 @@ authRouter.post("/login", async (req, res, next) => {
     userAgent: req.headers["user-agent"],
   };
 
-  const sessionResult = await repositories.session.makeSession(sessionValues);
-  if (!sessionResult.success) return next(sessionResult.error);
+  var result = await valkeyClient.set(
+    `session:${sessionValues["refreshToken"]}`,
+    JSON.stringify(sessionValues),
+    "EX",
+    castDaysToSeconds(7),
+  );
+  if (result !== "OK") throw new Error("Issue with Valkey");
 
   res
     .cookie("refreshToken", refreshToken, {
@@ -113,8 +119,7 @@ authRouter.post("/logout", async (req, res, next) => {
     return next(error);
   }
 
-  const result = await repositories.session.deleteByRefreshToken(token);
-  if (!result.success) return next(result.error);
+  await valkeyClient.del(`session:${token}`);
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
@@ -262,12 +267,10 @@ function refresh(req, res, next) {
   jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err) => {
     if (err) return next(err);
 
-    const resultSession =
-      await repositories.session.getSessionByRefreshToken(refreshToken);
-    if (!resultSession.success) return next(resultSession.error);
-    const session = resultSession.results[0];
-    if (!session)
-      return next({ statusCode: 500, message: "Session not found" });
+    let result = await valkeyClient.get(`session:${refreshToken}`);
+    if (!result) throw new Error("Refresh token doesn't exist");
+
+    const session = JSON.parse(result);
 
     const userId = session.userId;
     const resultUser = await repositories.user.find({ id: userId });
