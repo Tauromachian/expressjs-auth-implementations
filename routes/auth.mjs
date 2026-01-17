@@ -9,11 +9,7 @@ import db from "../db/index.mjs";
 import { usersTable } from "../db/schema/user.mjs";
 
 import { authDto } from "../dtos/auth.dto.mjs";
-import {
-  castDaysToMilliseconds,
-  castDaysToSeconds,
-  getDateInSeconds,
-} from "../utils/date.mjs";
+import { castDaysToMilliseconds, castDaysToSeconds } from "../utils/date.mjs";
 import { valkeyClient } from "../config/valkey.mjs";
 
 export const authRouter = Router();
