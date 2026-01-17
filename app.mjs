@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/auth", jwtRouter);
+app.use("/auth/jwt", jwtRouter);
 
 // catch 404 and forward to error handler
 app.use((_1, _2, next) => {
