@@ -192,12 +192,7 @@ authRouter.post("/forgot-password", async (req, res, next) => {
 
   const token = crypto.randomUUID();
 
-  valkeyClient.set(
-    `password-reset-${user.id}`,
-    token,
-    "EX",
-    castDaysToSeconds(1),
-  );
+  valkeyClient.set(token, "exist", "EX", castDaysToSeconds(1));
 
   try {
     return await resend.emails.send({
