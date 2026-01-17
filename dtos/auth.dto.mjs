@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import db from "../db/index.mjs";
 import { usersTable } from "../db/schema/user.mjs";
 
-export const loginDto = z
+export const authDto = z
   .object({
     email: z.email(),
     password: z.string().min(8).max(30),
