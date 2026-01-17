@@ -4,7 +4,7 @@ import createError from "http-errors";
 
 import logger from "./middlewares/pino-http.mjs";
 
-import { authRouter } from "./routes/auth.mjs";
+import { jwtRouter } from "./routes/jwt.mjs";
 import { errorHandler } from "./middlewares/errorHandler.mjs";
 
 import { config } from "dotenv";
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/auth", authRouter);
+app.use("/auth", jwtRouter);
 
 // catch 404 and forward to error handler
 app.use((_1, _2, next) => {

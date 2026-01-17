@@ -12,7 +12,7 @@ import { authDto } from "../dtos/auth.dto.mjs";
 import { castDaysToMilliseconds, castDaysToSeconds } from "../utils/date.mjs";
 import { valkeyClient } from "../config/valkey.mjs";
 
-export const authRouter = Router();
+export const jwtRouter = Router();
 
 const {
   APP_URL,
@@ -59,7 +59,7 @@ async function sendVerifyEmail(urlId, email) {
   });
 }
 
-authRouter.post("/login", async (req, res, next) => {
+jwtRouter.post("/login", async (req, res, next) => {
   if (req?.cookies?.refreshToken) {
     return refresh(req, res, next);
   }
@@ -110,7 +110,7 @@ authRouter.post("/login", async (req, res, next) => {
     .json({ accessToken: accessToken });
 });
 
-authRouter.post("/logout", async (req, res, next) => {
+jwtRouter.post("/logout", async (req, res, next) => {
   const token = req.cookies.refreshToken;
 
   if (!token) {
@@ -130,7 +130,7 @@ authRouter.post("/logout", async (req, res, next) => {
   res.json({ message: "Logged out successfully" });
 });
 
-authRouter.post("/register", async (req, res, next) => {
+jwtRouter.post("/register", async (req, res, next) => {
   try {
     var { password, email } = await authDto.register.parseAsync(req.body);
   } catch (error) {
@@ -156,7 +156,7 @@ authRouter.post("/register", async (req, res, next) => {
   });
 });
 
-authRouter.get("/verify", async (req, res) => {
+jwtRouter.get("/verify", async (req, res) => {
   const { verificationToken } = req.params;
 
   const results = await db
@@ -175,7 +175,7 @@ authRouter.get("/verify", async (req, res) => {
   res.status(200).end();
 });
 
-authRouter.post("/forgot-password", async (req, res, next) => {
+jwtRouter.post("/forgot-password", async (req, res, next) => {
   try {
     var email = z.email().parse(req.body.email);
   } catch (error) {
@@ -213,7 +213,7 @@ authRouter.post("/forgot-password", async (req, res, next) => {
   res.status(200).end();
 });
 
-authRouter.post("/reset-password", async (req, res, next) => {
+jwtRouter.post("/reset-password", async (req, res, next) => {
   const { token, password } = req.body;
 
   try {
@@ -243,7 +243,7 @@ authRouter.post("/reset-password", async (req, res, next) => {
   return res.json("Password reset successfully");
 });
 
-authRouter.post("refresh", refresh);
+jwtRouter.post("refresh", refresh);
 async function refresh(req, res, next) {
   const refreshToken = req.cookies.refreshToken;
 
