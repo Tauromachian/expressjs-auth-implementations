@@ -1,8 +1,7 @@
 import { Router } from "express";
 
 import { OAuth2Client } from "google-auth-library";
-
-import crypto from "crypto";
+import { makeState, validateState } from "../utils/oauth-state.mjs";
 
 export const googleRouter = Router();
 
@@ -16,42 +15,6 @@ const googleClient = new OAuth2Client({
   redirectUri: REDIRECT_URI,
 });
 
-function makeState() {
-  const payload = {
-    nonce: crypto.randomBytes(16).toString("hex"),
-    iat: Date.now(),
-  };
-
-  const encoded = Buffer.from(JSON.stringify(payload)).toString("base64url");
-
-  const sig = crypto
-    .createHmac("sha256", GOOGLE_STATE_SECRET)
-    .update(encoded)
-    .digest("base64url");
-
-  return `${encoded}.${sig}`;
-}
-
-function validateState(state) {
-  const [encoded, sig] = state.split(".");
-
-  const expectedSig = crypto
-    .createHmac("sha256", GOOGLE_STATE_SECRET)
-    .update(encoded)
-    .digest("base64url");
-
-  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {
-    return false;
-  }
-
-  const payload = JSON.parse(Buffer.from(encoded, "base64url").toString());
-
-  const FIVE_MINUTES = 5 * 60 * 1000;
-  if (Date.now() - payload.iat > FIVE_MINUTES) return false;
-
-  return true;
-}
-
 googleRouter.get("/login", (_, res) => {
   const params = new URLSearchParams({
     client_id: GOOGLE_ID,
@@ -59,7 +22,7 @@ googleRouter.get("/login", (_, res) => {
     response_type: "code",
     scope: "openid email profile",
     prompt: "select_account",
-    state: makeState(),
+    state: makeState(GOOGLE_STATE_SECRET),
   });
 
   const GOOGLE_URL = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
@@ -72,7 +35,7 @@ googleRouter.get("/callback", async (req, res, next) => {
 
   if (!code || !state) return next(new Error("Missing Google credential"));
 
-  const isValid = validateState(state);
+  const isValid = validateState(state, GOOGLE_STATE_SECRET);
 
   if (!isValid) return next(new Error("Invalid state"));
 
