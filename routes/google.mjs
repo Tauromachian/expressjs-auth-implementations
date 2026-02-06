@@ -52,10 +52,6 @@ function validateState(state) {
   return true;
 }
 
-googleRouter.get("/", (_, res) => {
-  res.render("index", { title: "Express" });
-});
-
 googleRouter.get("/login", (_, res) => {
   const params = new URLSearchParams({
     client_id: GOOGLE_ID,
