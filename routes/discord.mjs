@@ -36,33 +36,29 @@ export async function discordCallback(req, _, next) {
   const TOKEN_URL = `${DISCORD_URI}v10/oauth2/token`;
   const USER_API_URL = `${DISCORD_URI}users/@me`;
 
-  try {
-    const response = await fetch(TOKEN_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${btoa(`${DISCORD_ID}:${DISCORD_SECRET}`)}`,
-      },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        code,
-        redirect_uri: DISCORD_REDIRECT_URI,
-      }),
-    });
+  const response = await fetch(TOKEN_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${btoa(`${DISCORD_ID}:${DISCORD_SECRET}`)}`,
+    },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: DISCORD_REDIRECT_URI,
+    }),
+  });
 
-    const { access_token } = response.data;
+  const { access_token } = response.data;
 
-    const userResponse = await fetch(USER_API_URL, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
+  const userResponse = await fetch(USER_API_URL, {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
 
-    const payload = userResponse.data;
+  const payload = userResponse.data;
 
-    console.log("Logged in successfully");
-    console.log(payload);
-  } catch (error) {
-    return next(error);
-  }
+  console.log("Logged in successfully");
+  console.log(payload);
 }

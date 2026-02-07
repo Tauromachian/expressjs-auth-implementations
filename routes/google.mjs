@@ -39,23 +39,19 @@ googleRouter.get("/callback", async (req, res, next) => {
 
   if (!isValid) return next(new Error("Invalid state"));
 
-  try {
-    const { tokens } = await googleClient.getToken(String(code));
+  const { tokens } = await googleClient.getToken(String(code));
 
-    if (!tokens.id_token) throw new Error("Error with Google Login`");
+  if (!tokens.id_token) throw new Error("Error with Google Login`");
 
-    const ticket = await googleClient.verifyIdToken({
-      idToken: tokens.id_token,
-      audience: GOOGLE_ID,
-    });
+  const ticket = await googleClient.verifyIdToken({
+    idToken: tokens.id_token,
+    audience: GOOGLE_ID,
+  });
 
-    const payload = ticket.getPayload();
+  const payload = ticket.getPayload();
 
-    console.log("Logged in successfully");
-    console.log(payload);
+  console.log("Logged in successfully");
+  console.log(payload);
 
-    return res.redirect(APP_URL);
-  } catch (error) {
-    return next(error);
-  }
+  return res.redirect(APP_URL);
 });
