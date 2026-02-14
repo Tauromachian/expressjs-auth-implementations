@@ -1,6 +1,6 @@
 import logger from "../utils/logger.mjs";
 
-const Valkey = require("iovalkey");
+import Valkey from "iovalkey";
 
 const { VALKEY_HOST, VALKEY_PORT } = process.env;
 
