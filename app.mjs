@@ -2,6 +2,9 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import createError from "http-errors";
 
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
 import { config } from "dotenv";
 
 import logger from "./middlewares/pino-http.mjs";
@@ -10,6 +13,9 @@ import { jwtRouter } from "./routes/jwt.mjs";
 import { googleRouter } from "./routes/google.mjs";
 import { errorHandler } from "./middlewares/errorHandler.mjs";
 import { discordRouter } from "./routes/discord.mjs";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 config();
 
