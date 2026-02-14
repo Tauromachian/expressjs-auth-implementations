@@ -23,7 +23,7 @@ discordRouter.get("/login", (_, res) => {
   res.redirect(URL);
 });
 
-export async function discordCallback(req, _, next) {
+discordRouter.get("/callback", async (req, res, next) => {
   const { code, state } = req.query;
 
   if (!code) return next(new Error("Missing Discord credential"));
@@ -62,4 +62,4 @@ export async function discordCallback(req, _, next) {
   console.log(payload);
 
   return res.json({ message: "Login successful" });
-}
+});
