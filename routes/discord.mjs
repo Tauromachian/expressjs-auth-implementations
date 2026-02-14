@@ -1,13 +1,12 @@
 import { Router } from "express";
 import { makeState, validateState } from "../utils/oauth-state.mjs";
 
-const DISCORD_REDIRECT_URI = `${APP_URL}auth/discord/callback`;
-
 export const discordRouter = Router();
 
 const { APP_URL, DISCORD_ID, DISCORD_SECRET, DISCORD_STATE_SECRET } =
   process.env;
 
+const DISCORD_REDIRECT_URI = `${APP_URL}auth/discord/callback`;
 const REDIRECT_URI = `${APP_URL}auth/discord/callback`;
 
 discordRouter.get("/login", (_, res) => {
@@ -61,4 +60,6 @@ export async function discordCallback(req, _, next) {
 
   console.log("Logged in successfully");
   console.log(payload);
+
+  return res.json({ message: "Login successful" });
 }
