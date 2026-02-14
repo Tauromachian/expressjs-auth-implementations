@@ -9,6 +9,7 @@ import logger from "./middlewares/pino-http.mjs";
 import { jwtRouter } from "./routes/jwt.mjs";
 import { googleRouter } from "./routes/google.mjs";
 import { errorHandler } from "./middlewares/errorHandler.mjs";
+import { discordRouter } from "./routes/discord.mjs";
 
 config();
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 app.use("/auth/jwt", jwtRouter);
 app.use("/auth/google", googleRouter);
+app.use("/auth/discord", discordRouter);
 
 // catch 404 and forward to error handler
 app.use((_1, _2, next) => {
