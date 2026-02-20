@@ -23,13 +23,13 @@ discordRouter.get("/login", (_, res) => {
   res.redirect(URL);
 });
 
-discordRouter.get("/callback", async (req, res, next) => {
+discordRouter.get("/callback", async (req, res) => {
   const { code, state } = req.query;
 
-  if (!code) return next(new Error("Missing Discord credential"));
+  if (!code) throw new Error("Missing Discord credential");
 
   const isValid = validateState(state, DISCORD_STATE_SECRET);
-  if (!isValid) return next(new Error("Invalid state"));
+  if (!isValid) throw new Error("Invalid state");
 
   const DISCORD_URI = "https://discord.com/api/";
   const TOKEN_URL = `${DISCORD_URI}v10/oauth2/token`;
