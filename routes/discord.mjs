@@ -35,7 +35,7 @@ discordRouter.get("/callback", async (req, res, next) => {
   const TOKEN_URL = `${DISCORD_URI}v10/oauth2/token`;
   const USER_API_URL = `${DISCORD_URI}users/@me`;
 
-  const response = await fetch(TOKEN_URL, {
+  let response = await fetch(TOKEN_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -48,18 +48,18 @@ discordRouter.get("/callback", async (req, res, next) => {
     }),
   });
 
-  const { access_token } = response.data;
+  const data = await response.json();
+  const { access_token } = data;
 
-  const userResponse = await fetch(USER_API_URL, {
+  response = await fetch(USER_API_URL, {
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
   });
-
-  const payload = userResponse.data;
+  const userData = await response.json();
 
   console.log("Logged in successfully");
-  console.log(payload);
+  console.log(userData);
 
   return res.json({ message: "Login successful" });
 });
