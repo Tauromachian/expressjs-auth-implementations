@@ -1,5 +1,5 @@
 {
-  "name": "template-express-live-reload",
+  "name": "expressjs-auth-implementations",
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@10.22.0",
