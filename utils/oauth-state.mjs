@@ -2,7 +2,7 @@ import crypto from "crypto";
 
 export function makeState(secret) {
   const payload = {
-    nonce: crypto.randomBytes(16).toString("hex"),
+    id: crypto.randomUUID(),
     iat: Date.now(),
   };
 
